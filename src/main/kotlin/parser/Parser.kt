@@ -10,7 +10,7 @@ class Parser(
     private val scanner: Scanner
 ) {
 
-    var currentToken: Token? = scanner.scan()
+    private var currentToken: Token? = scanner.scan()
 
     fun parse() {
         parseProgram()
@@ -80,7 +80,7 @@ class Parser(
                     Token.Kind.LPAREN -> {
                         acceptIt()
                         parseExpression()
-                        accept(Token(Token.Kind.RPAREN, Characters.rightParen.toString()))
+                        accept(Token(Token.Kind.RPAREN, Characters.RIGHT_PAREN.toString()))
                     }
                     else -> {
                         throwError()
@@ -94,14 +94,14 @@ class Parser(
     }
 
     private fun parseExpression() {
-        parePrimaryExpression()
+        parsePrimaryExpression()
         while (currentToken?.kind == Token.Kind.OPERATOR) {
             parseOperator()
-            parePrimaryExpression()
+            parsePrimaryExpression()
         }
     }
 
-    private fun parePrimaryExpression() {
+    private fun parsePrimaryExpression() {
         when (currentToken?.kind) {
             Token.Kind.INT_LITERAL -> {
                 parseIntegerLiteral()
@@ -115,7 +115,7 @@ class Parser(
             Token.Kind.LPAREN -> {
                 acceptIt()
                 parseExpression()
-                accept(Token(Token.Kind.RPAREN, Characters.rightParen.toString()))
+                accept(Token(Token.Kind.RPAREN, Characters.RIGHT_PAREN.toString()))
             }
             else -> {
                 throwError()
@@ -126,6 +126,7 @@ class Parser(
     private fun parseDeclaration() {
         parseSingleDeclaration()
         while (currentToken?.kind == Token.Kind.SEMICOLON) {
+            acceptIt()
             parseSingleDeclaration()
         }
     }
@@ -135,13 +136,13 @@ class Parser(
             Token.Kind.CONST -> {
                 acceptIt()
                 parseIdentifier()
-                accept(Token(Token.Kind.IS, Characters.tilde.toString()))
+                accept(Token(Token.Kind.IS, Characters.TILDE.toString()))
                 parseExpression()
             }
             Token.Kind.VAR -> {
                 acceptIt()
                 parseIdentifier()
-                accept(Token(Token.Kind.COLON, Characters.colon.toString()))
+                accept(Token(Token.Kind.COLON, Characters.COLON.toString()))
                 parseIdentifier()
             }
             else -> {

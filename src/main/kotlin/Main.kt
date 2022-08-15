@@ -8,11 +8,11 @@ fun main(args: Array<String>) {
             var n: Integer
        in
             begin
-            n := 2 * m * m;
+            n := 2 * m * m
             end
     """
 
-    val scanner = Scanner(input)
+    val scanner = Scanner(input + Characters.EOT)
     val parser = Parser(scanner)
     parser.parse()
 }

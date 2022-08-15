@@ -24,25 +24,25 @@ object Characters {
         '+', '-', '*', '/', '<', '>', '=', '\\'
     )
 
-    const val semicolon: Char = ';'
+    const val SEMICOLON: Char = ';'
 
-    const val colon: Char = ':'
+    const val COLON: Char = ':'
 
-    const val tilde: Char = '~'
+    const val TILDE: Char = '~'
 
-    const val equal: Char = '='
+    const val EQUAL: Char = '='
 
-    const val leftParen: Char = '('
+    const val LEFT_PAREN: Char = '('
 
-    const val rightParen: Char = ')'
+    const val RIGHT_PAREN: Char = ')'
 
-    const val eot: Char = 0x04.toChar()
+    const val EOT: Char = 0x04.toChar()
 
-    const val exclamationMark: Char = '!'
+    const val EXCLAMATION_MARK: Char = '!'
 
-    const val space: Char = ' '
+    const val SPACE: Char = ' '
 
-    const val eol: Char = '\n'
+    const val EOL: Char = '\n'
 
 }
 
