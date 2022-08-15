@@ -9,17 +9,9 @@ class Scanner(inputText: String) {
 
     private val inputTextStream: Queue<Char> = LinkedList(inputText.toList())
 
-    private var currentChar: Char?
+    private var currentChar: Char? = inputTextStream.poll()
 
     private var currentSpelling: StringBuffer = StringBuffer()
-
-    init {
-        if (inputTextStream.isEmpty()) {
-            throwError()
-        }
-
-        currentChar = inputTextStream.poll()
-    }
 
     fun scan(): Token? {
         scanSeparators()
