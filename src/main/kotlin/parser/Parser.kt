@@ -48,27 +48,27 @@ class Parser(
             Token.Kind.IF -> {
                 acceptIt()
                 parseExpression()
-                accept(Token(Token.Kind.THEN, ReservedWords.then))
+                accept(Token(Token.Kind.THEN, ReservedWords.THEN))
                 parseSingleCommand()
-                accept(Token(Token.Kind.ELSE, ReservedWords.`else`))
+                accept(Token(Token.Kind.ELSE, ReservedWords.ELSE))
                 parseSingleCommand()
             }
             Token.Kind.WHILE -> {
                 acceptIt()
                 parseExpression()
-                accept(Token(Token.Kind.DO, ReservedWords.`do`))
+                accept(Token(Token.Kind.DO, ReservedWords.DO))
                 parseSingleCommand()
             }
             Token.Kind.LET -> {
                 acceptIt()
                 parseDeclaration()
-                accept(Token(Token.Kind.IN, ReservedWords.`in`))
+                accept(Token(Token.Kind.IN, ReservedWords.IN))
                 parseSingleCommand()
             }
             Token.Kind.BEGIN -> {
                 acceptIt()
                 parseCommand()
-                accept(Token(Token.Kind.END, ReservedWords.end))
+                accept(Token(Token.Kind.END, ReservedWords.END))
             }
             Token.Kind.IDENTIFIER -> {
                 parseIdentifier()

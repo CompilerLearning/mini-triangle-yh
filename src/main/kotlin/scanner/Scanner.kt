@@ -2,6 +2,7 @@ package scanner
 
 import ErrorHelper.throwError
 import Characters
+import ReservedWords
 import java.util.LinkedList
 import java.util.Queue
 
@@ -66,7 +67,20 @@ class Scanner(inputText: String) {
         while (currentChar.isLetter() || currentChar.isDigit()) {
             takeIt()
         }
-        return Token(Token.Kind.IDENTIFIER, currentSpelling.toString())
+        return when (currentSpelling.toString()) {
+            ReservedWords.BEGIN -> Token(Token.Kind.BEGIN, currentSpelling.toString())
+            ReservedWords.CONST -> Token(Token.Kind.CONST, currentSpelling.toString())
+            ReservedWords.DO -> Token(Token.Kind.DO, currentSpelling.toString())
+            ReservedWords.ELSE -> Token(Token.Kind.ELSE, currentSpelling.toString())
+            ReservedWords.END -> Token(Token.Kind.END, currentSpelling.toString())
+            ReservedWords.IF -> Token(Token.Kind.IF, currentSpelling.toString())
+            ReservedWords.IN -> Token(Token.Kind.IN, currentSpelling.toString())
+            ReservedWords.LET -> Token(Token.Kind.LET, currentSpelling.toString())
+            ReservedWords.THEN -> Token(Token.Kind.THEN, currentSpelling.toString())
+            ReservedWords.VAR -> Token(Token.Kind.VAR, currentSpelling.toString())
+            ReservedWords.WHILE -> Token(Token.Kind.WHILE, currentSpelling.toString())
+            else -> Token(Token.Kind.IDENTIFIER, currentSpelling.toString())
+        }
     }
 
     private fun scanIntLiteral(): Token {

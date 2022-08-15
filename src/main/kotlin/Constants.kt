@@ -47,15 +47,25 @@ object Characters {
 }
 
 object ReservedWords {
-    const val then = "then"
+    const val BEGIN = "begin"
 
-    const val `else` = "else"
+    const val CONST = "const"
 
-    const val `do` = "do"
+    const val DO = "do"
 
-    const val `in` = "in"
+    const val ELSE = "else"
 
-    const val end = "end"
+    const val END = "end"
 
-    const val `var` = "var"
+    const val IF = "if"
+
+    const val IN = "in"
+
+    const val LET = "let"
+
+    const val THEN = "then"
+
+    const val VAR = "var"
+
+    const val WHILE = "while"
 }
