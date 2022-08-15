@@ -1,4 +1,4 @@
-object Character {
+object Characters {
 
     val letters: CharArray = charArrayOf(
         'a', 'b', 'c', 'd', 'e',
@@ -46,3 +46,16 @@ object Character {
 
 }
 
+object ReservedWords {
+    const val then = "then"
+
+    const val `else` = "else"
+
+    const val `do` = "do"
+
+    const val `in` = "in"
+
+    const val end = "end"
+
+    const val `var` = "var"
+}

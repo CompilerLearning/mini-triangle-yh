@@ -97,9 +97,7 @@ primary-Expression  ::= Integer-Literal
 Declaration         ::= single-Declaration (; single-Declaration)*
 
 single-Declaration  ::= const Identifier ~ Expression
-                    |   var Identifier : Type-denoter
-
-Type-denoter        ::= Identifier
+                    |   var Identifier : Identifier
 
 Operator            ::= + | - | * | / | < | > | = | \
 

@@ -1,7 +1,7 @@
 package scanner
 
 import ErrorHelper.throwError
-import Character
+import Characters
 import java.util.LinkedList
 import java.util.Queue
 
@@ -42,12 +42,12 @@ class Scanner(inputText: String) {
             currentChar.isLetter() -> scanIdentifier()
             currentChar.isDigit() -> scanIntLiteral()
             currentChar.isOperator() -> scanOperator()
-            currentChar == Character.semicolon -> scanSemicolon()
-            currentChar == Character.colon -> scanBecomeOrColon()
-            currentChar == Character.tilde -> scanIs()
-            currentChar == Character.leftParen -> scanLparen()
-            currentChar == Character.rightParen -> scanRparen()
-            currentChar == Character.eot -> scanEot()
+            currentChar == Characters.semicolon -> scanSemicolon()
+            currentChar == Characters.colon -> scanBecomeOrColon()
+            currentChar == Characters.tilde -> scanIs()
+            currentChar == Characters.leftParen -> scanLparen()
+            currentChar == Characters.rightParen -> scanRparen()
+            currentChar == Characters.eot -> scanEot()
             else -> throwError()
         }
     }
@@ -55,8 +55,8 @@ class Scanner(inputText: String) {
     private fun scanSeparators() {
         while (currentChar.isSeparator()) {
             when (currentChar) {
-                Character.exclamationMark -> scanComment()
-                Character.space, Character.eol -> takeIt()
+                Characters.exclamationMark -> scanComment()
+                Characters.space, Characters.eol -> takeIt()
             }
         }
     }
@@ -89,7 +89,7 @@ class Scanner(inputText: String) {
 
     private fun scanBecomeOrColon(): Token {
         takeIt()
-        return if (currentChar == Character.equal) {
+        return if (currentChar == Characters.equal) {
             takeIt()
             Token(Token.Kind.BECOMES, currentSpelling.toString())
         } else {
@@ -120,18 +120,18 @@ class Scanner(inputText: String) {
         takeIt()
         while (currentChar.isGraphic()) {
             takeIt()
-            take(Character.eol)
+            take(Characters.eol)
         }
     }
 
-    private fun Char?.isLetter(): Boolean = this != null && Character.letters.contains(this)
+    private fun Char?.isLetter(): Boolean = this != null && Characters.letters.contains(this)
 
-    private fun Char?.isDigit(): Boolean = this != null && Character.digits.contains(this)
+    private fun Char?.isDigit(): Boolean = this != null && Characters.digits.contains(this)
 
-    private fun Char?.isOperator(): Boolean = this != null && Character.operator.contains(this)
+    private fun Char?.isOperator(): Boolean = this != null && Characters.operator.contains(this)
 
     private fun Char?.isSeparator(): Boolean =
-        this == Character.space || this == Character.eol || this == Character.exclamationMark
+        this == Characters.space || this == Characters.eol || this == Characters.exclamationMark
 
     private fun Char?.isGraphic(): Boolean = this != null && this.code in 32..126
 

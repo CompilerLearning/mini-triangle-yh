@@ -1,6 +1,8 @@
 package parser
 
+import Characters
 import ErrorHelper.throwError
+import ReservedWords
 import scanner.Scanner
 import scanner.Token
 
@@ -11,7 +13,10 @@ class Parser(
     var currentToken: Token? = scanner.scan()
 
     fun parse() {
-
+        parseProgram()
+        if (currentToken?.kind != Token.Kind.EOT) {
+            throwError()
+        }
     }
 
     private fun accept(expected: Token) {
@@ -24,5 +29,148 @@ class Parser(
 
     private fun acceptIt() {
         currentToken = scanner.scan()
+    }
+
+    private fun parseProgram() {
+        parseSingleCommand()
+    }
+
+    private fun parseCommand() {
+        parseSingleCommand()
+        while (currentToken?.kind == Token.Kind.SEMICOLON) {
+            acceptIt()
+            parseSingleCommand()
+        }
+    }
+
+    private fun parseSingleCommand() {
+        when (currentToken?.kind) {
+            Token.Kind.IF -> {
+                acceptIt()
+                parseExpression()
+                accept(Token(Token.Kind.THEN, ReservedWords.then))
+                parseSingleCommand()
+                accept(Token(Token.Kind.ELSE, ReservedWords.`else`))
+                parseSingleCommand()
+            }
+            Token.Kind.WHILE -> {
+                acceptIt()
+                parseExpression()
+                accept(Token(Token.Kind.DO, ReservedWords.`do`))
+                parseSingleCommand()
+            }
+            Token.Kind.LET -> {
+                acceptIt()
+                parseDeclaration()
+                accept(Token(Token.Kind.IN, ReservedWords.`in`))
+                parseSingleCommand()
+            }
+            Token.Kind.BEGIN -> {
+                acceptIt()
+                parseCommand()
+                accept(Token(Token.Kind.END, ReservedWords.end))
+            }
+            Token.Kind.IDENTIFIER -> {
+                parseIdentifier()
+                when (currentToken?.kind) {
+                    Token.Kind.BECOMES -> {
+                        acceptIt()
+                        parseExpression()
+                    }
+                    Token.Kind.LPAREN -> {
+                        acceptIt()
+                        parseExpression()
+                        accept(Token(Token.Kind.RPAREN, Characters.rightParen.toString()))
+                    }
+                    else -> {
+                        throwError()
+                    }
+                }
+            }
+            else -> {
+                throwError()
+            }
+        }
+    }
+
+    private fun parseExpression() {
+        parePrimaryExpression()
+        while (currentToken?.kind == Token.Kind.OPERATOR) {
+            parseOperator()
+            parePrimaryExpression()
+        }
+    }
+
+    private fun parePrimaryExpression() {
+        when (currentToken?.kind) {
+            Token.Kind.INT_LITERAL -> {
+                parseIntegerLiteral()
+            }
+            Token.Kind.IDENTIFIER -> {
+                parseIdentifier()
+            }
+            Token.Kind.OPERATOR -> {
+                parseOperator()
+            }
+            Token.Kind.LPAREN -> {
+                acceptIt()
+                parseExpression()
+                accept(Token(Token.Kind.RPAREN, Characters.rightParen.toString()))
+            }
+            else -> {
+                throwError()
+            }
+        }
+    }
+
+    private fun parseDeclaration() {
+        parseSingleDeclaration()
+        while (currentToken?.kind == Token.Kind.SEMICOLON) {
+            parseSingleDeclaration()
+        }
+    }
+
+    private fun parseSingleDeclaration() {
+        when (currentToken?.kind) {
+            Token.Kind.CONST -> {
+                acceptIt()
+                parseIdentifier()
+                accept(Token(Token.Kind.IS, Characters.tilde.toString()))
+                parseExpression()
+            }
+            Token.Kind.VAR -> {
+                acceptIt()
+                parseIdentifier()
+                accept(Token(Token.Kind.COLON, Characters.colon.toString()))
+                parseIdentifier()
+            }
+            else -> {
+                throwError()
+            }
+        }
+    }
+
+    private fun parseOperator() {
+        if (currentToken?.kind == Token.Kind.OPERATOR) {
+            currentToken = scanner.scan()
+        } else {
+            throwError()
+        }
+    }
+
+    private fun parseIdentifier() {
+        if (currentToken?.kind == Token.Kind.IDENTIFIER) {
+            currentToken = scanner.scan()
+        } else {
+            throwError()
+        }
+    }
+
+    private fun parseIntegerLiteral() {
+        if (currentToken?.kind == Token.Kind.INT_LITERAL) {
+            currentToken = scanner.scan()
+        } else {
+            throwError()
+        }
     }
 }

@@ -1,12 +1,18 @@
+import parser.Parser
 import scanner.Scanner
 
 fun main(args: Array<String>) {
-    val input = "let var y: Integer"
-    val scanner = Scanner(input)
+    val input = """
+       let
+            const m ~ 7;
+            var n: Integer
+       in
+            begin
+            n := 2 * m * m;
+            end
+    """
 
-    var token = scanner.scan()
-    while (token != null) {
-        println(token)
-        token = scanner.scan()
-    }
+    val scanner = Scanner(input)
+    val parser = Parser(scanner)
+    parser.parse()
 }
