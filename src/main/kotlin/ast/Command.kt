@@ -13,9 +13,21 @@ class CallCommand(
 ) : Command()
 
 class SequentialCommand(
-    val command1: Command,
-    val command2: Command
-) : Command()
+    val commands: List<Command>
+) : Command() {
+
+    companion object {
+        fun of(c: Command, o: SequentialCommand? = null): SequentialCommand {
+            val commands = buildList {
+                o?.commands?.let {
+                    addAll(it)
+                }
+                add(c)
+            }
+            return SequentialCommand(commands)
+        }
+    }
+}
 
 class IfCommand(
     val expression: Expression,

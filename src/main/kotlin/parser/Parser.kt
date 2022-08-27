@@ -3,6 +3,7 @@ package parser
 import Characters
 import ErrorHelper.throwError
 import ReservedWords
+import ast.*
 import scanner.Scanner
 import scanner.Token
 
@@ -31,56 +32,65 @@ class Parser(
         currentToken = scanner.scan()
     }
 
-    private fun parseProgram() {
-        parseSingleCommand()
+    private fun parseProgram(): Program {
+        val command = parseSingleCommand()
+        return Program(command)
     }
 
-    private fun parseCommand() {
-        parseSingleCommand()
+    private fun parseCommand(): Command {
+        val command = parseSingleCommand()
+        var sequentialCommand = SequentialCommand.of(command)
         while (currentToken?.kind == Token.Kind.SEMICOLON) {
             acceptIt()
-            parseSingleCommand()
+            sequentialCommand = SequentialCommand.of(parseSingleCommand(), sequentialCommand)
         }
+        return sequentialCommand
     }
 
-    private fun parseSingleCommand() {
-        when (currentToken?.kind) {
+    private fun parseSingleCommand(): Command {
+        return when (currentToken?.kind) {
             Token.Kind.IF -> {
                 acceptIt()
-                parseExpression()
+                val expression = parseExpression()
                 accept(Token(Token.Kind.THEN, ReservedWords.THEN))
-                parseSingleCommand()
+                val trueCommand = parseSingleCommand()
                 accept(Token(Token.Kind.ELSE, ReservedWords.ELSE))
-                parseSingleCommand()
+                val falseCommand = parseSingleCommand()
+                IfCommand(expression, trueCommand, falseCommand)
             }
             Token.Kind.WHILE -> {
                 acceptIt()
-                parseExpression()
+                val expression = parseExpression()
                 accept(Token(Token.Kind.DO, ReservedWords.DO))
-                parseSingleCommand()
+                val command = parseSingleCommand()
+                WhileCommand(expression, command)
             }
             Token.Kind.LET -> {
                 acceptIt()
-                parseDeclaration()
+                val declaration = parseDeclaration()
                 accept(Token(Token.Kind.IN, ReservedWords.IN))
-                parseSingleCommand()
+                val command = parseSingleCommand()
+                LetCommand(declaration, command)
             }
             Token.Kind.BEGIN -> {
                 acceptIt()
-                parseCommand()
+                val command = parseCommand()
                 accept(Token(Token.Kind.END, ReservedWords.END))
+                command
             }
             Token.Kind.IDENTIFIER -> {
-                parseIdentifier()
+                val identifier = parseIdentifier()
                 when (currentToken?.kind) {
                     Token.Kind.BECOMES -> {
                         acceptIt()
-                        parseExpression()
+                        val expression = parseExpression()
+                        AssignCommand(SimpleVName(identifier), expression)
                     }
                     Token.Kind.LPAREN -> {
                         acceptIt()
-                        parseExpression()
+                        val expression = parseExpression()
                         accept(Token(Token.Kind.RPAREN, Characters.RIGHT_PAREN.toString()))
+                        CallCommand(identifier, expression)
                     }
                     else -> {
                         throwError()
@@ -93,29 +103,36 @@ class Parser(
         }
     }
 
-    private fun parseExpression() {
-        parsePrimaryExpression()
+    private fun parseExpression(): Expression {
+        var leftExpression: Expression = parsePrimaryExpression()
         while (currentToken?.kind == Token.Kind.OPERATOR) {
-            parseOperator()
-            parsePrimaryExpression()
+            val operator = parseOperator()
+            val rightExpression = parsePrimaryExpression()
+            leftExpression = BinaryExpression(operator, leftExpression, rightExpression)
         }
+        return leftExpression
     }
 
-    private fun parsePrimaryExpression() {
-        when (currentToken?.kind) {
+    private fun parsePrimaryExpression(): Expression {
+        return when (currentToken?.kind) {
             Token.Kind.INT_LITERAL -> {
-                parseIntegerLiteral()
+                val literal = parseIntegerLiteral()
+                IntegerExpression(literal)
             }
             Token.Kind.IDENTIFIER -> {
-                parseIdentifier()
+                val vName = SimpleVName(parseIdentifier())
+                VNameExpression(vName)
             }
             Token.Kind.OPERATOR -> {
-                parseOperator()
+                val operator = parseOperator()
+                val expression = parsePrimaryExpression()
+                UnaryExpression(operator, expression)
             }
             Token.Kind.LPAREN -> {
                 acceptIt()
-                parseExpression()
+                val expression = parseExpression()
                 accept(Token(Token.Kind.RPAREN, Characters.RIGHT_PAREN.toString()))
+                expression
             }
             else -> {
                 throwError()
@@ -123,27 +140,31 @@ class Parser(
         }
     }
 
-    private fun parseDeclaration() {
-        parseSingleDeclaration()
+    private fun parseDeclaration(): Declaration {
+        val declaration = parseSingleDeclaration()
+        var sequentialDeclaration = SequentialDeclaration.of(declaration)
         while (currentToken?.kind == Token.Kind.SEMICOLON) {
             acceptIt()
-            parseSingleDeclaration()
+            sequentialDeclaration = SequentialDeclaration.of(parseSingleDeclaration(), sequentialDeclaration)
         }
+        return sequentialDeclaration
     }
 
-    private fun parseSingleDeclaration() {
-        when (currentToken?.kind) {
+    private fun parseSingleDeclaration(): Declaration {
+        return when (currentToken?.kind) {
             Token.Kind.CONST -> {
                 acceptIt()
-                parseIdentifier()
+                val identifier = parseIdentifier()
                 accept(Token(Token.Kind.IS, Characters.TILDE.toString()))
-                parseExpression()
+                val expression = parseExpression()
+                ConstDeclaration(identifier, expression)
             }
             Token.Kind.VAR -> {
                 acceptIt()
-                parseIdentifier()
+                val identifier = parseIdentifier()
                 accept(Token(Token.Kind.COLON, Characters.COLON.toString()))
-                parseIdentifier()
+                val typeDenoter = SimpleTypeDenoter(parseIdentifier())
+                ValDeclaration(identifier, typeDenoter)
             }
             else -> {
                 throwError()
@@ -151,25 +172,31 @@ class Parser(
         }
     }
 
-    private fun parseOperator() {
-        if (currentToken?.kind == Token.Kind.OPERATOR) {
+    private fun parseOperator(): Operator {
+        val token = currentToken ?: throwError()
+        return if (token.kind == Token.Kind.OPERATOR) {
             currentToken = scanner.scan()
+            Operator(token.spelling)
         } else {
             throwError()
         }
     }
 
-    private fun parseIdentifier() {
-        if (currentToken?.kind == Token.Kind.IDENTIFIER) {
+    private fun parseIdentifier(): Identifier {
+        val token = currentToken ?: throwError()
+        return if (token.kind == Token.Kind.IDENTIFIER) {
             currentToken = scanner.scan()
+            Identifier(token.spelling)
         } else {
             throwError()
         }
     }
 
-    private fun parseIntegerLiteral() {
-        if (currentToken?.kind == Token.Kind.INT_LITERAL) {
+    private fun parseIntegerLiteral(): IntegerLiteral {
+        val token = currentToken ?: throwError()
+        return if (token.kind == Token.Kind.INT_LITERAL) {
             currentToken = scanner.scan()
+            IntegerLiteral(token.spelling)
         } else {
             throwError()
         }

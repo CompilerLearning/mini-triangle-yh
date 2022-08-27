@@ -13,6 +13,18 @@ class ValDeclaration(
 ): Declaration()
 
 class SequentialDeclaration(
-    val declaration1: Declaration,
-    val declaration2: Declaration,
-): Declaration()
+    val declarations: List<Declaration>
+): Declaration() {
+
+    companion object {
+        fun of(c: Declaration, o: SequentialDeclaration? = null): SequentialDeclaration {
+            val declarations = buildList {
+                o?.declarations?.let {
+                    addAll(it)
+                }
+                add(c)
+            }
+            return SequentialDeclaration(declarations)
+        }
+    }
+}
