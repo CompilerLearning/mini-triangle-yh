@@ -2,7 +2,6 @@ package parser
 
 import Characters
 import ErrorHelper.throwError
-import Node
 import ReservedWords
 import scanner.Scanner
 import scanner.Token
@@ -14,7 +13,7 @@ class Parser(
     private var currentToken: Token? = scanner.scan()
 
     fun parse() {
-        parseProgram(Node(0, "Program"))
+        parseProgram()
         if (currentToken?.kind != Token.Kind.EOT) {
             throwError()
         }
@@ -32,55 +31,55 @@ class Parser(
         currentToken = scanner.scan()
     }
 
-    private fun parseProgram(node: Node) {
-        parseSingleCommand(node.child("single-Command"))
+    private fun parseProgram() {
+        parseSingleCommand()
     }
 
-    private fun parseCommand(node: Node) {
-        parseSingleCommand(node.child("single-Command"))
+    private fun parseCommand() {
+        parseSingleCommand()
         while (currentToken?.kind == Token.Kind.SEMICOLON) {
             acceptIt()
-            parseSingleCommand(node.child("single-Command"))
+            parseSingleCommand()
         }
     }
 
-    private fun parseSingleCommand(node: Node) {
+    private fun parseSingleCommand() {
         when (currentToken?.kind) {
             Token.Kind.IF -> {
                 acceptIt()
-                parseExpression(node.child("Expression"))
+                parseExpression()
                 accept(Token(Token.Kind.THEN, ReservedWords.THEN))
-                parseSingleCommand(node.child("single-Command"))
+                parseSingleCommand()
                 accept(Token(Token.Kind.ELSE, ReservedWords.ELSE))
-                parseSingleCommand(node.child("single-Command"))
+                parseSingleCommand()
             }
             Token.Kind.WHILE -> {
                 acceptIt()
-                parseExpression(node.child("Expression"))
+                parseExpression()
                 accept(Token(Token.Kind.DO, ReservedWords.DO))
-                parseSingleCommand(node.child("single-Command"))
+                parseSingleCommand()
             }
             Token.Kind.LET -> {
                 acceptIt()
-                parseDeclaration(node.child("Declaration"))
+                parseDeclaration()
                 accept(Token(Token.Kind.IN, ReservedWords.IN))
-                parseSingleCommand(node.child("single-Command"))
+                parseSingleCommand()
             }
             Token.Kind.BEGIN -> {
                 acceptIt()
-                parseCommand(node.child("Command"))
+                parseCommand()
                 accept(Token(Token.Kind.END, ReservedWords.END))
             }
             Token.Kind.IDENTIFIER -> {
-                parseIdentifier(node.child("Identifier"))
+                parseIdentifier()
                 when (currentToken?.kind) {
                     Token.Kind.BECOMES -> {
                         acceptIt()
-                        parseExpression(node.child("Expression"))
+                        parseExpression()
                     }
                     Token.Kind.LPAREN -> {
                         acceptIt()
-                        parseExpression(node.child("Expression"))
+                        parseExpression()
                         accept(Token(Token.Kind.RPAREN, Characters.RIGHT_PAREN.toString()))
                     }
                     else -> {
@@ -94,28 +93,28 @@ class Parser(
         }
     }
 
-    private fun parseExpression(node: Node) {
-        parsePrimaryExpression(node.child("primary-Expression"))
+    private fun parseExpression() {
+        parsePrimaryExpression()
         while (currentToken?.kind == Token.Kind.OPERATOR) {
-            parseOperator(node.child("Operator"))
-            parsePrimaryExpression(node.child("primary-Expression"))
+            parseOperator()
+            parsePrimaryExpression()
         }
     }
 
-    private fun parsePrimaryExpression(node: Node) {
+    private fun parsePrimaryExpression() {
         when (currentToken?.kind) {
             Token.Kind.INT_LITERAL -> {
-                parseIntegerLiteral(node.child("Int-Literal"))
+                parseIntegerLiteral()
             }
             Token.Kind.IDENTIFIER -> {
-                parseIdentifier(node.child("Identifier"))
+                parseIdentifier()
             }
             Token.Kind.OPERATOR -> {
-                parseOperator(node.child("Operator"))
+                parseOperator()
             }
             Token.Kind.LPAREN -> {
                 acceptIt()
-                parseExpression(node.child("Expression"))
+                parseExpression()
                 accept(Token(Token.Kind.RPAREN, Characters.RIGHT_PAREN.toString()))
             }
             else -> {
@@ -124,27 +123,27 @@ class Parser(
         }
     }
 
-    private fun parseDeclaration(node: Node) {
-        parseSingleDeclaration(node.child("single-Declaration"))
+    private fun parseDeclaration() {
+        parseSingleDeclaration()
         while (currentToken?.kind == Token.Kind.SEMICOLON) {
             acceptIt()
-            parseSingleDeclaration(node.child("single-Declaration"))
+            parseSingleDeclaration()
         }
     }
 
-    private fun parseSingleDeclaration(node: Node) {
+    private fun parseSingleDeclaration() {
         when (currentToken?.kind) {
             Token.Kind.CONST -> {
                 acceptIt()
-                parseIdentifier(node.child("Identifier"))
+                parseIdentifier()
                 accept(Token(Token.Kind.IS, Characters.TILDE.toString()))
-                parseExpression(node.child("Expression"))
+                parseExpression()
             }
             Token.Kind.VAR -> {
                 acceptIt()
-                parseIdentifier(node.child("Identifier"))
+                parseIdentifier()
                 accept(Token(Token.Kind.COLON, Characters.COLON.toString()))
-                parseIdentifier(node.child("Identifier"))
+                parseIdentifier()
             }
             else -> {
                 throwError()
@@ -152,7 +151,7 @@ class Parser(
         }
     }
 
-    private fun parseOperator(node: Node) {
+    private fun parseOperator() {
         if (currentToken?.kind == Token.Kind.OPERATOR) {
             currentToken = scanner.scan()
         } else {
@@ -160,7 +159,7 @@ class Parser(
         }
     }
 
-    private fun parseIdentifier(node: Node) {
+    private fun parseIdentifier() {
         if (currentToken?.kind == Token.Kind.IDENTIFIER) {
             currentToken = scanner.scan()
         } else {
@@ -168,7 +167,7 @@ class Parser(
         }
     }
 
-    private fun parseIntegerLiteral(node: Node) {
+    private fun parseIntegerLiteral() {
         if (currentToken?.kind == Token.Kind.INT_LITERAL) {
             currentToken = scanner.scan()
         } else {
