@@ -1,30 +1,56 @@
 package ast
 
-abstract class Declaration : AST()
+abstract class Declaration(
+    depth: Int
+) : AST(depth)
 
 class ConstDeclaration(
+    depth: Int,
     val identifier: Identifier,
     val expression: Expression
-) : Declaration()
+) : Declaration(depth) {
+
+    override fun printNode() {
+        println(buildContents("ConstDeclaration"))
+        identifier.printNode()
+        expression.printNode()
+    }
+}
 
 class ValDeclaration(
+    depth: Int,
     val identifier: Identifier,
     val typeDenoter: TypeDenoter
-): Declaration()
+) : Declaration(depth) {
+
+    override fun printNode() {
+        println(buildContents("ValDeclaration"))
+        identifier.printNode()
+        typeDenoter.printNode()
+    }
+}
 
 class SequentialDeclaration(
+    depth: Int,
     val declarations: List<Declaration>
-): Declaration() {
+) : Declaration(depth) {
+
+    override fun printNode() {
+        println(buildContents("SequentialDeclaration"))
+        declarations.forEach {
+            it.printNode()
+        }
+    }
 
     companion object {
-        fun of(c: Declaration, o: SequentialDeclaration? = null): SequentialDeclaration {
+        fun of(depth: Int, c: Declaration, o: SequentialDeclaration? = null): SequentialDeclaration {
             val declarations = buildList {
                 o?.declarations?.let {
                     addAll(it)
                 }
                 add(c)
             }
-            return SequentialDeclaration(declarations)
+            return SequentialDeclaration(depth, declarations)
         }
     }
 }

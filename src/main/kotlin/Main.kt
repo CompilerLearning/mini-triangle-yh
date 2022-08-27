@@ -14,5 +14,6 @@ fun main(args: Array<String>) {
 
     val scanner = Scanner(input + Characters.EOT)
     val parser = Parser(scanner)
-    parser.parse()
+    val ast = parser.parse()
+    ast.printNode()
 }
