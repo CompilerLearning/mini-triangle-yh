@@ -80,8 +80,8 @@ class PrintingVisitor : Visitor<Int, Unit> {
         requireNotNull(input)
         println(buildContents(input, "BinaryExpression"))
 
-        visitOperator(binaryExpression.operator, input + 1)
         visitExpression(binaryExpression.leftExpression, input + 1)
+        visitOperator(binaryExpression.operator, input + 1)
         visitExpression(binaryExpression.rightExpression, input + 1)
     }
 
@@ -121,7 +121,7 @@ class PrintingVisitor : Visitor<Int, Unit> {
 
     override fun visitSequentialDeclaration(sequentialDeclaration: SequentialDeclaration, input: Int?) {
         requireNotNull(input)
-        println(buildContents(input, "ValDeclaration"))
+        println(buildContents(input, "SequentialDeclaration"))
 
         sequentialDeclaration.declarations.forEach { declaration ->
             visitDeclaration(declaration, input + 1)
