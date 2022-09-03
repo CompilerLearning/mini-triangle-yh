@@ -1,6 +1,6 @@
 package ast
 
-abstract class Expression(
+sealed class Expression(
     depth: Int
 ) : AST(depth)
 
@@ -34,12 +34,12 @@ class BinaryExpression(
 
 class IntegerExpression(
     depth: Int,
-    val integerExpression: IntegerLiteral
+    val integerLiteral: IntegerLiteral
 ) : Expression(depth) {
 
     override fun printNode() {
         println(buildContents("IntegerExpression"))
-        integerExpression.printNode()
+        integerLiteral.printNode()
     }
 }
 

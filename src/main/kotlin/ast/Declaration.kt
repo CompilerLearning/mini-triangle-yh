@@ -1,6 +1,6 @@
 package ast
 
-abstract class Declaration(
+sealed class Declaration(
     depth: Int
 ) : AST(depth)
 

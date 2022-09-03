@@ -1,6 +1,6 @@
 package ast
 
-abstract class VName(
+sealed class VName(
     depth: Int
 ) : AST(depth)
 

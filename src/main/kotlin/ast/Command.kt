@@ -1,6 +1,6 @@
 package ast
 
-abstract class Command(
+sealed class Command(
     depth: Int
 ) : AST(depth)
 

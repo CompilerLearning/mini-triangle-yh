@@ -1,6 +1,6 @@
 package ast
 
-abstract class Terminal(
+sealed class Terminal(
     depth: Int,
     val spelling: String
 ) : AST(depth)

@@ -1,6 +1,6 @@
 package ast
 
-abstract class TypeDenoter(
+sealed class TypeDenoter(
     depth: Int
 ) : AST(depth)
 
