@@ -4,6 +4,12 @@ import ast.*
 
 class PrintingVisitor : Visitor<Int, Unit> {
 
+    override fun accept(ast: AST) {
+        if (ast is Program) {
+            visitProgram(ast, 0)
+        }
+    }
+
     override fun visitProgram(program: Program, input: Int?) {
         requireNotNull(input)
         println(buildContents(input, "Program"))
@@ -162,12 +168,12 @@ class PrintingVisitor : Visitor<Int, Unit> {
         command: Command,
         depth: Int
     ) = when (command) {
-        is AssignCommand -> visitAssignCommand(command, depth + 1)
-        is CallCommand -> visitCallCommand(command, depth + 1)
-        is IfCommand -> visitIfCommand(command, depth + 1)
-        is LetCommand -> visitLetCommand(command, depth + 1)
-        is SequentialCommand -> visitSequentialCommand(command, depth + 1)
-        is WhileCommand -> visitWhileCommand(command, depth + 1)
+        is AssignCommand -> visitAssignCommand(command, depth)
+        is CallCommand -> visitCallCommand(command, depth)
+        is IfCommand -> visitIfCommand(command, depth)
+        is LetCommand -> visitLetCommand(command, depth)
+        is SequentialCommand -> visitSequentialCommand(command, depth)
+        is WhileCommand -> visitWhileCommand(command, depth)
     }
 
     private fun visitExpression(

@@ -1,5 +1,6 @@
 import parser.Parser
 import scanner.Scanner
+import visitor.PrintingVisitor
 
 fun main(args: Array<String>) {
     val input = """
@@ -15,5 +16,6 @@ fun main(args: Array<String>) {
     val scanner = Scanner(input + Characters.EOT)
     val parser = Parser(scanner)
     val ast = parser.parse()
-    ast.printNode()
+
+    PrintingVisitor().accept(ast)
 }

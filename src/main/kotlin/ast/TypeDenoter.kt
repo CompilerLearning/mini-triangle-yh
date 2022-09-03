@@ -1,17 +1,6 @@
 package ast
 
-sealed class TypeDenoter(
-    depth: Int
-) : AST(depth)
+sealed class TypeDenoter : AST
 
-class SimpleTypeDenoter(
-    depth: Int,
-    val identifier: Identifier
-) : TypeDenoter(depth) {
-
-    override fun printNode() {
-        println(buildContents("SimpleTypeDenoter"))
-        identifier.printNode()
-    }
-}
+class SimpleTypeDenoter(val identifier: Identifier) : TypeDenoter()
 

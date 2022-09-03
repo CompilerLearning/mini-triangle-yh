@@ -1,36 +1,9 @@
 package ast
 
-sealed class Terminal(
-    depth: Int,
-    val spelling: String
-) : AST(depth)
+sealed class Terminal(val spelling: String) : AST
 
-class Identifier(
-    depth: Int,
-    spelling: String
-) : Terminal(depth, spelling) {
+class Identifier(spelling: String) : Terminal(spelling)
 
-    override fun printNode() {
-        println(buildContents("Identifier: $spelling"))
-    }
-}
+class IntegerLiteral(spelling: String) : Terminal(spelling)
 
-class IntegerLiteral(
-    depth: Int,
-    spelling: String
-) : Terminal(depth, spelling) {
-
-    override fun printNode() {
-        println(buildContents("IntegerLiteral: $spelling"))
-    }
-}
-
-class Operator(
-    depth: Int,
-    spelling: String
-) : Terminal(depth, spelling) {
-
-    override fun printNode() {
-        println(buildContents("Operator: $spelling"))
-    }
-}
+class Operator(spelling: String) : Terminal(spelling)

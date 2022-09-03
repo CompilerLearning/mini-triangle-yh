@@ -4,6 +4,8 @@ import ast.*
 
 interface Visitor<I, O> {
 
+    fun accept(ast: AST)
+
     /* Program */
     fun visitProgram(program: Program, input: I? = null): O?
 

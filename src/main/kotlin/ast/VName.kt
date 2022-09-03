@@ -1,16 +1,5 @@
 package ast
 
-sealed class VName(
-    depth: Int
-) : AST(depth)
+sealed class VName : AST
 
-class SimpleVName(
-    depth: Int,
-    val identifier: Identifier
-) : VName(depth) {
-
-    override fun printNode() {
-        println(buildContents("SimpleVName"))
-        identifier.printNode()
-    }
-}
+class SimpleVName(val identifier: Identifier) : VName()
